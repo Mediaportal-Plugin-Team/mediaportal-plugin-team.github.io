@@ -100,6 +100,7 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - MediaPortal: mediaportal.md
 
 extra:
   social:
