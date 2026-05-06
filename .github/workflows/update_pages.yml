@@ -78,11 +78,46 @@ jobs:
           echo -e "\n" >> "$DEST"
           tail -n +"$LINE_NR" "$SOURCE" >> "$DEST"
 
-      - name: 🏅 Mediaportal Page
+      - name: 🐙 Mediaportal Page
         run: |
-          SOURCE="mediaportal/README.md"
-          DEST="docs/mediaportal.md"
-          cp "$SOURCE" "$DEST"
+          import os
+          import re
+
+          source_path = "mediaportal/README.md"
+          dest_path= "docs/mediaportal.md"
+
+          def convert_github_alerts(text):
+              mapping = {
+                  "NOTE": "note",
+                  "TIP": "tip",
+                  "IMPORTANT": "abstract",  # info
+                  "WARNING": "warning",
+                  "CAUTION": "danger"       # failure
+              }
+          
+              def replacement(match):
+                  raw_type = match.group(1).upper()
+                  mkdocs_type = mapping.get(raw_type, "note")
+                  content = match.group(2)
+                  
+                  fixed_content = ""
+                  for line in content.strip().split('\n'):
+                      clean_line = re.sub(r'^>\s?', '', line)
+                      fixed_content += f"    {clean_line}\n"
+                      
+                  return f"!!! {mkdocs_type}\n{fixed_content}"
+          
+              pattern = r'^>\s+\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]((?:\n^>.*)+)'
+              return re.sub(pattern, replacement, text, flags=re.M | re.I)
+
+          with open(source_path, "r", encoding="utf-8") as f:
+              content = f.read()
+
+          content = convert_github_alerts(content)
+
+          with open(dest_path, "w", encoding="utf-8") as f:
+              f.write(content)
+        shell: python
 
       - name: 💅 Build the Docs site
         run: mkdocs build --config-file .mkdocs.yml
