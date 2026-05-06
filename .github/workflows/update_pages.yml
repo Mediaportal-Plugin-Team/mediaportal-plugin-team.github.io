@@ -28,6 +28,16 @@ jobs:
           ref: master
           path: profile
 
+      - name: ⬇️ Checkout Mediaportal
+        uses: actions/checkout@v6
+        with:
+          repository: MediaPortal/MediaPortal-1
+          ref: master
+          sparse-checkout: |
+            README.md
+          sparse-checkout-cone-mode: false
+          path: mediaportal
+
       - name: 🎭 Setup Pages
         id: pages
         uses: actions/configure-pages@v6
@@ -67,6 +77,12 @@ jobs:
           sed -i '/##[[:space:]]*Plugins/,$d' "$DEST"
           echo -e "\n" >> "$DEST"
           tail -n +"$LINE_NR" "$SOURCE" >> "$DEST"
+
+      - name: 🏅 Mediaportal Page
+        run: |
+          SOURCE="mediaportal/README.md"
+          DEST="docs/mediaportal.md"
+          cp "$SOURCE" "$DEST"
 
       - name: 💅 Build the Docs site
         run: mkdocs build --config-file .mkdocs.yml
