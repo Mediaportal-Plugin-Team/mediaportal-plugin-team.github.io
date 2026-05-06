@@ -47,15 +47,10 @@ jobs:
 
       - name: 🏅 Generate Profile Page
         run: |
-          SOURCE="profile/README.md"
+          SOURCE="profile/profile/README.md"
           DEST="docs/index.md"
 
-          # 1. Debug: Show how the file looks (first 20 lines) to see why grep fails
-          echo "--- File Preview ---"
-          head -n 20 "$SOURCE" | cat -A
-          echo "--------------------"
-
-          # 2. Flexible search: ignores case, extra spaces, and handles potential hidden characters
+          # 1. Flexible search: ignores case, extra spaces, and handles potential hidden characters
           # We search for '##' followed by any space and then 'Plugins'
           LINE_NR=$(grep -inE "##[[:space:]]*Plugins" "$SOURCE" | cut -d: -f1 | head -n 1)
 
@@ -68,13 +63,10 @@ jobs:
 
           echo "Success: Section found at line $LINE_NR"
 
-          # 3. Clean and Append
+          # 2. Clean and Append
           sed -i '/##[[:space:]]*Plugins/,$d' "$DEST"
           echo -e "\n" >> "$DEST"
           tail -n +"$LINE_NR" "$SOURCE" >> "$DEST"
-          
-          echo "Done! Final content preview:"
-          tail -n 5 "$DEST"
 
       - name: 💅 Build the Docs site
         run: mkdocs build --config-file .mkdocs.yml
