@@ -21,7 +21,7 @@ jobs:
       - name: ⬇️ Check out Repo
         uses: actions/checkout@v6
 
-      - name: ⬇️ Checkout Badges
+      - name: ⬇️ Checkout Profile
         uses: actions/checkout@v6
         with:
           repository: ${{ github.repository_owner }}/.github
