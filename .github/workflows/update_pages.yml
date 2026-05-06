@@ -47,31 +47,34 @@ jobs:
 
       - name: 🏅 Generate Profile Page
         run: |
-          # Define file paths
           SOURCE="profile/README.md"
           DEST="docs/index.md"
 
-          # 1. Find the starting line of the Plugins section (case-insensitive)
-          LINE_NR=$(grep -in "## Plugins" "$SOURCE" | cut -d: -f1 | head -n 1)
+          # 1. Debug: Show how the file looks (first 20 lines) to see why grep fails
+          echo "--- File Preview ---"
+          head -n 20 "$SOURCE" | cat -A
+          echo "--------------------"
+
+          # 2. Flexible search: ignores case, extra spaces, and handles potential hidden characters
+          # We search for '##' followed by any space and then 'Plugins'
+          LINE_NR=$(grep -inE "##[[:space:]]*Plugins" "$SOURCE" | cut -d: -f1 | head -n 1)
 
           if [ -z "$LINE_NR" ]; then
-            echo "Error: '## Plugins' not found in $SOURCE"
+            echo "Error: '## Plugins' section not found in $SOURCE"
+            echo "Available headers in file:"
+            grep "^#" "$SOURCE"
             exit 1
           fi
 
-          # 2. Clean up index.md: remove existing Plugins section to avoid duplication
-          # This deletes everything from "## Plugins" to the end of the file
-          sed -i '/## Plugins/,$d' "$DEST"
+          echo "Success: Section found at line $LINE_NR"
 
-          # 3. Append the new content from SOURCE to DEST
-          # Adding a couple of newlines for clean formatting
+          # 3. Clean and Append
+          sed -i '/##[[:space:]]*Plugins/,$d' "$DEST"
           echo -e "\n" >> "$DEST"
           tail -n +"$LINE_NR" "$SOURCE" >> "$DEST"
-
-          # 4. Verify for the logs
-          echo "Content successfully merged into $DEST"
-          echo "Preview of the end of the file:"
-          tail -n 10 "$DEST"
+          
+          echo "Done! Final content preview:"
+          tail -n 5 "$DEST"
 
       - name: 💅 Build the Docs site
         run: mkdocs build --config-file .mkdocs.yml
