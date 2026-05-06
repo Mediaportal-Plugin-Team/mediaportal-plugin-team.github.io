@@ -47,9 +47,31 @@ jobs:
 
       - name: 🏅 Generate Profile Page
         run: |
-          echo -e "\n" >> docs/index.md
-          sed -n '/## Plugins/,$p' profile/README.md >> docs/index.md
-          echo -e "\n" >> docs/index.md
+          # Define file paths
+          SOURCE="profile/README.md"
+          DEST="docs/index.md"
+
+          # 1. Find the starting line of the Plugins section (case-insensitive)
+          LINE_NR=$(grep -in "## Plugins" "$SOURCE" | cut -d: -f1 | head -n 1)
+
+          if [ -z "$LINE_NR" ]; then
+            echo "Error: '## Plugins' not found in $SOURCE"
+            exit 1
+          fi
+
+          # 2. Clean up index.md: remove existing Plugins section to avoid duplication
+          # This deletes everything from "## Plugins" to the end of the file
+          sed -i '/## Plugins/,$d' "$DEST"
+
+          # 3. Append the new content from SOURCE to DEST
+          # Adding a couple of newlines for clean formatting
+          echo -e "\n" >> "$DEST"
+          tail -n +"$LINE_NR" "$SOURCE" >> "$DEST"
+
+          # 4. Verify for the logs
+          echo "Content successfully merged into $DEST"
+          echo "Preview of the end of the file:"
+          tail -n 10 "$DEST"
 
       - name: 💅 Build the Docs site
         run: mkdocs build --config-file .mkdocs.yml
