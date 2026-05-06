@@ -1,0 +1,58 @@
+name: Build and Update Pages
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    name: 🌐 Build Pages
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Check out Repo
+        uses: actions/checkout@v6
+
+      - name: ⬇️ Checkout Badges
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ github.repository_owner }}/.github
+          ref: master
+          path: profile
+
+      - name: 🎭 Setup Pages
+        id: pages
+        uses: actions/configure-pages@v6
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.x
+
+      - name: 📦 Install mkDocs
+        run: pip install mkdocs-material
+
+      - name: 📦 Install mkDocs Plug-ins
+        run: |
+          pip install mkdocs-video
+          pip install "mkdocs-material[imaging]"
+
+      - name: 🏅 Generate Profile Page
+        run: |
+          echo -e "\n" >> docs/index.md
+          sed -n '/## Plugins/,$p' profile/README.md >> docs/index.md
+          echo -e "\n" >> docs/index.md
+
+      - name: 💅 Build the Docs site
+        run: mkdocs build --config-file .mkdocs.yml
+
+      - name: 🚀 Deploy to GitHub Pages
+        run: mkdocs gh-deploy --config-file .mkdocs.yml --force
