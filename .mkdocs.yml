@@ -1,6 +1,6 @@
 # Project information
 site_name: Mediaportal Plugin Team
-site_url: mediaportal-plugins.github.io
+site_url: https://mediaportal-plugins.github.io
 site_author: Mediaportal Plugin Team | Andrew J.Swan
 site_description: >-
   A repository that contains Plugins and Skins for Mediaportal from different authors who, for some reason, stopped updating their plugins.
