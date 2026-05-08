@@ -1,6 +1,6 @@
 # Mediaportal Plugin Team
 
-![Mediaportal Plugin Team](https://avatars.githubusercontent.com/u/168293775){ align=left loading=lazy style="width:20%" }
+![Mediaportal Plugin Team](https://avatars.githubusercontent.com/u/168293775){ align=left loading=lazy style="width:10%" }
 
 A repository that contains Plugins and Skins for [Mediaportal](https://www.team-mediaportal.com) from different authors who, for some reason, stopped updating their plugins.
 
